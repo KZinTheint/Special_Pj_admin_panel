@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+</head>
+<body>
+
+    <main class="dashboard-container">
+        <header class="dashboard-header">
+            <h1>Student Applications</h1>
+            <div id="delete-action" class="delete-icon-container" title="Delete Selected">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="delete-icon">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+            </div>
+        </header>
+        <div id="loading-indicator" class="loading">Loading data...</div>
+        <div id="data-container">
+            </div>
+    </main>
+
+    <script src="../assets/js/dashboard.js"></script>
+</body>
+</html>
