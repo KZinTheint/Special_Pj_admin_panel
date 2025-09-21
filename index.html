@@ -6,23 +6,17 @@
     <title>Admin Panel</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body>
-    <div class="header">
-        <h1>Admin Panel</h1>
-    </div>
-    <div class="sidebar">
-        <nav>
-            <ul>
-                <li><a href="./pages/dashboard.html">Dashboard</a></li>
-                <li><a href="#users">Users</a></li>
-                <li><a href="#settings">Settings</a></li>
-            </ul>
-        </nav>
-    </div>
+<body class="sidebar-hidden">
+    <app-sidebar></app-sidebar>
     <div class="main-content">
-        <h2>Welcome to the Dashboard</h2>
-        <p>This is a simple admin panel created with vanilla JavaScript.</p>
+        <app-header></app-header>
+        <div class="container">
+            <h2>Welcome</h2>
+            <p>This is a simple admin panel created with vanilla JavaScript.</p>
+        </div>
     </div>
+    <script src="components/sidebar.js"></script>
+    <script src="components/header.js"></script>
     <script src="assets/js/main.js"></script>
 </body>
 </html>

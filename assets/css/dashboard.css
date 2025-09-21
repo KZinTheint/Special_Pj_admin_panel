@@ -1,33 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-:root {
-    --primary-color: #4a90e2;
-    --background-color: #f9fafb;
-    --container-bg: #ffffff;
-    --text-color: #374151;
-    --header-color: #1f2937;
-    --border-color: #e5e7eb;
-    --shadow-color: rgba(0, 0, 0, 0.05);
-    --hover-bg: #f3f4f6;
-    --danger-color: #ef4444;
-    --danger-hover-bg: rgba(239, 68, 68, 0.1);
-}
-
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-color);
-    margin: 0;
-}
-
-.dashboard-container {
-    max-width: 1400px;
-    margin: 2rem auto;
-    background-color: var(--container-bg);
+.dashboard-content {
     padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 10px 15px -3px var(--shadow-color), 0 4px 6px -2px var(--shadow-color);
-    border: 1px solid var(--border-color);
 }
 
 .dashboard-header {
@@ -72,12 +45,14 @@ h1 {
 
 .table-wrapper {
     overflow-x: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background-color: var(--container-bg);
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 1rem;
 }
 
 th, td {
@@ -87,8 +62,12 @@ th, td {
     border-bottom: 1px solid var(--border-color);
 }
 
+table tr:last-child td {
+    border-bottom: none;
+}
+
 thead th {
-    background-color: var(--background-color);
+    background-color: #f9fafb;
     color: #6b7280;
     font-size: 0.75rem;
     font-weight: 600;

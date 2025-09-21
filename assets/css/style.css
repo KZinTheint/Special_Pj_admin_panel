@@ -1,41 +1,105 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    background-color: #f4f4f4;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --primary-color: #4a90e2;
+    --background-color: #f9fafb;
+    --container-bg: #ffffff;
+    --text-color: #374151;
+    --header-color: #1f2937;
+    --border-color: #e5e7eb;
+    --shadow-color: rgba(0, 0, 0, 0.05);
+    --sidebar-bg: #1f2937;
+    --sidebar-link-color: #d1d5db;
+    --sidebar-link-hover: #4b5563;
+    --sidebar-width: 250px;
 }
 
-.header {
-    background-color: #333;
-    color: white;
-    padding: 1rem;
-    text-align: center;
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
 }
 
 .sidebar {
-    width: 200px;
+    width: var(--sidebar-width);
+    background-color: var(--sidebar-bg);
+    color: white;
     height: 100vh;
-    background-color: #444;
     position: fixed;
-    padding-top: 20px;
+    top: 0;
+    left: 0;
+    transition: transform 0.3s ease-in-out;
+    z-index: 1000;
+}
+
+body.sidebar-hidden .sidebar {
+    transform: translateX(-100%);
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 1rem;
+    margin-bottom: 1rem;
+}
+
+.sidebar-header h2 {
+    margin: 0;
 }
 
 .sidebar nav ul {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
 
-.sidebar nav ul li a {
-    color: white;
-    text-decoration: none;
+.sidebar nav a {
     display: block;
-    padding: 10px 20px;
+    color: var(--sidebar-link-color);
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
 }
 
-.sidebar nav ul li a:hover {
-    background-color: #555;
+.sidebar nav a:hover {
+    background-color: var(--sidebar-link-hover);
 }
 
 .main-content {
-    margin-left: 220px; /* Sidebar width + some padding */
-    padding: 20px;
+    margin-left: var(--sidebar-width);
+    transition: margin-left 0.3s ease-in-out;
+    width: calc(100% - var(--sidebar-width));
+}
+
+body.sidebar-hidden .main-content {
+    margin-left: 0;
+    width: 100%;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background-color: var(--container-bg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+#toggle-sidebar {
+    background: none;
+    border: none;
+    color: var(--header-color);
+    cursor: pointer;
+    margin-right: 1rem;
+}
+
+.container {
+    padding: 2rem;
 }

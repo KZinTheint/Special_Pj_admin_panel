@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events Management</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/events.css">
+</head>
+<body class="sidebar-hidden">
+    <app-sidebar></app-sidebar>
+    <div class="main-content">
+        <app-header></app-header>
+        <div class="container">
+            <div class="events-header">
+                <h1>Events Management</h1>
+                <button id="create-event-btn" class="btn-primary">Create Event</button>
+            </div>
+            <div id="events-grid" class="events-grid">
+                </div>
+        </div>
+    </div>
+
+    <div id="create-event-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Event</h2>
+                <span class="close-btn" id="create-close-btn">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="create-event-form" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input type="text" id="title" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="event_date">Event Date</label>
+                        <input type="datetime-local" id="event_date" name="event_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cover_image">Cover Image</label>
+                        <input type="file" id="cover_image" name="cover_image" accept="image/*" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="images">Other Images (up to 10)</label>
+                        <input type="file" id="images" name="images" accept="image/*" multiple>
+                    </div>
+                    <h3>Content Blocks</h3>
+                    <div id="content-blocks-container"></div>
+                    <button type="button" id="add-content-block" class="btn-secondary">Add Content Block</button>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn-primary">Create Event</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="edit-event-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Event</h2>
+                <span class="close-btn" id="edit-close-btn">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="edit-event-form" enctype="multipart/form-data">
+                    <input type="hidden" id="edit-event-id" name="id">
+                    <div class="form-group">
+                        <label for="edit-title">Title</label>
+                        <input type="text" id="edit-title" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-event_date">Event Date</label>
+                        <input type="datetime-local" id="edit-event_date" name="event_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Current Cover Image</label>
+                        <div id="existing-cover-image-container"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-cover_image">Cover Image (Upload to replace)</label>
+                        <input type="file" id="edit-cover_image" name="cover_image" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label>Existing Images</label>
+                        <div id="existing-images-container" class="existing-images-grid"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-images">Upload More Images (up to 10)</label>
+                        <input type="file" id="edit-images" name="images" accept="image/*" multiple>
+                    </div>
+                    <h3>Content Blocks</h3>
+                    <div id="edit-content-blocks-container"></div>
+                    <button type="button" id="edit-add-content-block" class="btn-secondary">Add Content Block</button>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn-primary">Update Event</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../components/sidebar.js"></script>
+    <script src="../components/header.js"></script>
+    <script src="../assets/js/events.js"></script>
+</body>
+</html>
