@@ -39,11 +39,35 @@
                     </div>
                     <div class="form-group">
                         <label for="cover_image">Cover Image</label>
-                        <input type="file" id="cover_image" name="cover_image" accept="image/*" required>
+                        <div id="cover-dropzone" class="dropzone" tabindex="0" aria-label="Cover image dropzone">
+                            <div class="dropzone-instructions">
+                                <span class="dz-icon">📷</span>
+                                <div>
+                                    <strong>Click to upload</strong> or drag & drop
+                                    <div class="hint">JPG, PNG up to 5MB</div>
+                                </div>
+                            </div>
+                            <input type="file" id="cover_image" name="cover_image" accept="image/*" required aria-describedby="cover-hint">
+                        </div>
+                        <div class="preview-single">
+                            <img id="cover-preview" alt="Cover preview" style="display:none;" />
+                        </div>
+                        <small id="cover-hint" class="form-hint">Recommended 1200×630px.</small>
                     </div>
                     <div class="form-group">
                         <label for="images">Other Images (up to 10)</label>
-                        <input type="file" id="images" name="images" accept="image/*" multiple>
+                        <div id="images-dropzone" class="dropzone" tabindex="0" aria-label="Images dropzone">
+                            <div class="dropzone-instructions">
+                                <span class="dz-icon">🖼️</span>
+                                <div>
+                                    <strong>Click to upload</strong> or drag & drop
+                                    <div class="hint">You can select multiple images</div>
+                                </div>
+                            </div>
+                            <input type="file" id="images" name="images" accept="image/*" multiple aria-describedby="images-hint">
+                        </div>
+                        <div class="preview-grid" id="images-preview-grid"></div>
+                        <small id="images-hint" class="form-hint">0/10 selected. First image may be used as thumbnail.</small>
                     </div>
                     <h3>Content Blocks</h3>
                     <div id="content-blocks-container"></div>

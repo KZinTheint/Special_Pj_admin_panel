@@ -13,6 +13,18 @@ document.addEventListener('DOMContentLoaded', () => {
   let createContentCount = 0;
   const MAX_BLOCKS = 10;
 
+  // --- Enhanced UI Elements ---
+  const coverInput = document.getElementById('cover_image');
+  const imagesInput = document.getElementById('images');
+  const coverPreview = document.getElementById('cover-preview');
+  const imagesPreviewGrid = document.getElementById('images-preview-grid');
+  const coverDropzone = document.getElementById('cover-dropzone');
+  const imagesDropzone = document.getElementById('images-dropzone');
+  const imagesHint = document.getElementById('images-hint');
+
+  // DataTransfer to manage multiple image selection and removal
+  let imagesDT = new DataTransfer();
+
   // --- Modal Handling ---
   const openModal = (modal) => modal.style.display = 'flex';
   const closeModal = (modal) => modal.style.display = 'none';
@@ -21,6 +33,11 @@ document.addEventListener('DOMContentLoaded', () => {
     createForm.reset();
     createContentContainer.innerHTML = '';
     createContentCount = 0;
+    // reset UI previews and counters
+    imagesDT = new DataTransfer();
+    if (imagesPreviewGrid) imagesPreviewGrid.innerHTML = '';
+    if (coverPreview) { coverPreview.src = ''; coverPreview.style.display = 'none'; }
+    if (imagesHint) imagesHint.textContent = '0/10 selected. First image may be used as thumbnail.';
     openModal(createModal);
   });
   createCloseBtn.addEventListener('click', () => closeModal(createModal));
@@ -92,6 +109,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Form Submission ---
   createForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    // Ensure images input reflects current imagesDT selection
+    if (imagesInput) {
+      imagesInput.files = imagesDT.files;
+    }
+
     const formData = new FormData(e.target);
 
     const contents = [];
@@ -132,15 +155,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const block = document.createElement('div');
     block.className = 'content-block';
     block.innerHTML = `
-      <div>
-        <label>Subheading (optional)</label>
-        <input type="text" name="subheading-${count}">
+      <div class="content-grid">
+        <div>
+          <label>Subheading (optional)</label>
+          <input type="text" name="subheading-${count}" placeholder="Enter subheading...">
+        </div>
+        <div>
+          <label>Description (optional)</label>
+          <textarea name="description-${count}" rows="3" placeholder="Write a brief description..."></textarea>
+        </div>
       </div>
-      <div>
-        <label>Description (optional)</label>
-        <textarea name="description-${count}" rows="2"></textarea>
+      <div class="block-actions">
+        <button type="button" class="btn-secondary btn-remove-block">Remove</button>
       </div>
     `;
+    const removeBtn = block.querySelector('.btn-remove-block');
+    removeBtn.addEventListener('click', () => block.remove());
     container.appendChild(block);
     return count + 1;
   }
@@ -148,6 +178,116 @@ document.addEventListener('DOMContentLoaded', () => {
   addContentBlockBtn.addEventListener('click', () => {
     createContentCount = addContentBlock(createContentContainer, createContentCount);
   });
+
+  // --- Image Previews and Dropzones ---
+  function updateCoverPreview(file) {
+    if (!file || !coverPreview) return;
+    const url = URL.createObjectURL(file);
+    coverPreview.src = url;
+    coverPreview.style.display = 'block';
+  }
+
+  function refreshImagesPreview() {
+    if (!imagesPreviewGrid || !imagesHint) return;
+    imagesPreviewGrid.innerHTML = '';
+    const files = Array.from(imagesDT.files);
+    files.forEach((file, idx) => {
+      const url = URL.createObjectURL(file);
+      const wrapper = document.createElement('div');
+      wrapper.className = 'thumb';
+      wrapper.innerHTML = `
+        <img src="${url}" alt="Image ${idx + 1}">
+        <button type="button" class="thumb-remove" aria-label="Remove image">×</button>
+      `;
+      wrapper.querySelector('.thumb-remove').addEventListener('click', () => {
+        // Remove this file from DataTransfer
+        const dt = new DataTransfer();
+        Array.from(imagesDT.files).forEach((f, i) => {
+          if (i !== idx) dt.items.add(f);
+        });
+        imagesDT = dt;
+        imagesInput.files = imagesDT.files;
+        refreshImagesPreview();
+      });
+      imagesPreviewGrid.appendChild(wrapper);
+    });
+    imagesHint.textContent = `${files.length}/10 selected. First image may be used as thumbnail.`;
+  }
+
+  function addImages(files) {
+    const current = Array.from(imagesDT.files);
+    const toAdd = Array.from(files).filter(f => f.type.startsWith('image/'));
+    const totalAllowed = 10 - current.length;
+    const finalAdd = toAdd.slice(0, Math.max(0, totalAllowed));
+    if (toAdd.length > finalAdd.length) {
+      alert('You can upload up to 10 images in total. Extra files were ignored.');
+    }
+    const dt = new DataTransfer();
+    [...current, ...finalAdd].forEach(f => dt.items.add(f));
+    imagesDT = dt;
+    imagesInput.files = imagesDT.files;
+    refreshImagesPreview();
+  }
+
+  if (coverInput) {
+    coverInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (file && file.type.startsWith('image/')) {
+        updateCoverPreview(file);
+      }
+    });
+  }
+
+  if (imagesInput) {
+    imagesInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files.length) {
+        addImages(e.target.files);
+      }
+    });
+  }
+
+  function setupDropzone(dropzone, onFiles) {
+    if (!dropzone) return;
+    const addDragOver = (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    };
+    const removeDragOver = (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+    };
+    dropzone.addEventListener('dragover', addDragOver);
+    dropzone.addEventListener('dragleave', removeDragOver);
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      const files = e.dataTransfer?.files;
+      if (files && files.length) onFiles(files);
+    });
+    dropzone.addEventListener('click', () => {
+      const input = dropzone.querySelector('input[type="file"]');
+      if (input) input.click();
+    });
+    dropzone.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const input = dropzone.querySelector('input[type="file"]');
+        if (input) input.click();
+      }
+    });
+  }
+
+  setupDropzone(coverDropzone, (files) => {
+    const file = files[0];
+    if (file && file.type.startsWith('image/')) {
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      coverInput.files = dt.files;
+      updateCoverPreview(file);
+    }
+  });
+
+  setupDropzone(imagesDropzone, (files) => addImages(files));
 
   // --- Initial Load ---
   fetchEvents();
