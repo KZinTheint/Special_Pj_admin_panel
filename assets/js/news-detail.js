@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
     images.forEach((image, index) => {
       const imageElement = document.createElement('div');
       imageElement.className = 'gallery-image';
-      imageElement.innerHTML = `<img src="${image.url}" alt="Gallery image ${index + 1}">`;
+      imageElement.innerHTML = `<img src="${image}" alt="Gallery image ${index + 1}">`;
       imageElement.addEventListener('click', () => openImageModal(index));
       newsImagesGrid.appendChild(imageElement);
     });
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Open image modal
   function openImageModal(index) {
     currentImageIndex = index;
-    modalImage.src = galleryImages[index].url;
+    modalImage.src = galleryImages[index];
     modalImage.alt = `Gallery image ${index + 1}`;
     imageModal.style.display = 'flex';
     
