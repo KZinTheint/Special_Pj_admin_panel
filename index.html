@@ -3,16 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
+    <title>MIIT Admin Panel</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
 </head>
 <body class="sidebar-hidden">
     <app-sidebar></app-sidebar>
     <div class="main-content">
         <app-header></app-header>
         <div class="container">
-            <h2>Welcome</h2>
-            <p>This is a simple admin panel created with vanilla JavaScript.</p>
+            <!-- Welcome Section -->
+            <div class="card" style="margin-bottom: 2rem;">
+                <div class="card-header">
+                    <h1 style="margin: 0; font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, var(--miit-primary), var(--miit-secondary), var(--miit-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                        Welcome to MIIT Admin Panel
+                    </h1>
+                    <p style="margin: 1rem 0 0 0; color: var(--text-light); font-size: 1.125rem;">
+                        Myanmar Institute of Information Technology - Student Management System
+                    </p>
+                </div>
+                <div class="card-body">
+                    <p style="font-size: 1.125rem; line-height: 1.6; color: var(--text-color);">
+                        Manage student applications, events, and administrative tasks with our comprehensive admin panel. 
+                        
+                    </p>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                <div class="card">
+                    <div class="card-body" style="text-align: center;">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary-color); margin-bottom: 0.5rem;">📊</div>
+                        <h3 class="card-title">Student Applications</h3>
+                        <p class="card-subtitle">Manage and review student applications</p>
+                        <a href="pages/dashboard.html" class="btn-primary" style="margin-top: 1rem; text-decoration: none; display: inline-block;">View Dashboard</a>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body" style="text-align: center;">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--secondary-color); margin-bottom: 0.5rem;">📅</div>
+                        <h3 class="card-title">Events Management</h3>
+                        <p class="card-subtitle">Create and manage campus events</p>
+                        <a href="pages/events.html" class="btn-primary" style="margin-top: 1rem; text-decoration: none; display: inline-block;">Manage Events</a>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body" style="text-align: center;">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--accent-color); margin-bottom: 0.5rem;">👥</div>
+                        <h3 class="card-title">User Management</h3>
+                        <p class="card-subtitle">Manage system users and permissions</p>
+                        <button class="btn-secondary" style="margin-top: 1rem;">Coming Soon</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 style="margin: 0; font-size: 1.75rem; font-weight: 700;">System Features</h2>
+                </div>
+                <div class="card-body">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                        <div>
+                            <h4 style="color: var(--primary-color); margin-bottom: 1rem;">🎓 Student Management</h4>
+                            <ul style="color: var(--text-color); line-height: 1.6;">
+                                <li>View and manage student applications</li>
+                                <li>Download student documents</li>
+                                <li>Bulk operations for efficiency</li>
+                                <li>Real-time data updates</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 style="color: var(--secondary-color); margin-bottom: 1rem;">📅 Event Management</h4>
+                            <ul style="color: var(--text-color); line-height: 1.6;">
+                                <li>Create and schedule events</li>
+                                <li>Upload event images and content</li>
+                                <li>Manage event details</li>
+                                <li>Event calendar integration</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 style="color: var(--accent-color); margin-bottom: 1rem;">⚙️ System Administration</h4>
+                            <ul style="color: var(--text-color); line-height: 1.6;">
+                                <li>User role management</li>
+                                <li>System configuration</li>
+                                <li>Data backup and recovery</li>
+                                <li>Security monitoring</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <script src="components/sidebar.js"></script>
