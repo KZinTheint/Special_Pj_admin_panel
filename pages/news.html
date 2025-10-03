@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Management</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/news.css">
+</head>
+<body class="sidebar-hidden">
+    <app-sidebar></app-sidebar>
+    <div class="main-content">
+        <app-header></app-header>
+        <div class="container">
+            <div class="news-header">
+                <h1>News Management</h1>
+                <button id="create-news-btn" class="btn-primary">Create News</button>
+            </div>
+            <div id="news-grid" class="news-grid">
+                </div>
+        </div>
+    </div>
+
+    <div id="create-news-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New News</h2>
+                <span class="close-btn" id="create-close-btn">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="create-news-form" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input type="text" id="title" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cover_image">Cover Image</label>
+                        <div id="cover-dropzone" class="dropzone" tabindex="0" aria-label="Cover image dropzone">
+                            <div class="dropzone-instructions">
+                                <span class="dz-icon">📷</span>
+                                <div>
+                                    <strong>Click to upload</strong> or drag & drop
+                                    <div class="hint">JPG, PNG up to 5MB</div>
+                                </div>
+                            </div>
+                            <input type="file" id="cover_image" name="cover_image" accept="image/*" required aria-describedby="cover-hint">
+                        </div>
+                        <div class="preview-single">
+                            <img id="cover-preview" alt="Cover preview" style="display:none;" />
+                        </div>
+                        <small id="cover-hint" class="form-hint">Recommended 1200×630px.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="images">Other Images (up to 10)</label>
+                        <div id="images-dropzone" class="dropzone" tabindex="0" aria-label="Images dropzone">
+                            <div class="dropzone-instructions">
+                                <span class="dz-icon">🖼️</span>
+                                <div>
+                                    <strong>Click to upload</strong> or drag & drop
+                                    <div class="hint">You can select multiple images</div>
+                                </div>
+                            </div>
+                            <input type="file" id="images" name="images" accept="image/*" multiple aria-describedby="images-hint">
+                        </div>
+                        <div class="preview-grid" id="images-preview-grid"></div>
+                        <small id="images-hint" class="form-hint">0/10 selected. First image may be used as thumbnail.</small>
+                    </div>
+                    <h3>Content Blocks</h3>
+                    <div id="content-blocks-container"></div>
+                    <button type="button" id="add-content-block" class="btn-secondary">Add Content Block</button>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn-primary">Create News</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="edit-news-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit News</h2>
+                <span class="close-btn" id="edit-close-btn">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="edit-news-form" enctype="multipart/form-data">
+                    <input type="hidden" id="edit-news-id" name="id">
+                    <div class="form-group">
+                        <label for="edit-title">Title</label>
+                        <input type="text" id="edit-title" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Current Cover Image</label>
+                        <div id="existing-cover-image-container"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-cover_image">Cover Image (Upload to replace)</label>
+                        <input type="file" id="edit-cover_image" name="cover_image" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label>Existing Images</label>
+                        <div id="existing-images-container" class="existing-images-grid"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-images">Upload More Images (up to 10)</label>
+                        <input type="file" id="edit-images" name="images" accept="image/*" multiple>
+                    </div>
+                    <h3>Content Blocks</h3>
+                    <div id="edit-content-blocks-container"></div>
+                    <button type="button" id="edit-add-content-block" class="btn-secondary">Add Content Block</button>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn-primary">Update News</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../components/sidebar.js"></script>
+    <script src="../components/header.js"></script>
+    <script src="../assets/js/news.js"></script>
+</body>
+</html>
