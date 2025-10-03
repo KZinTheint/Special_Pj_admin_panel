@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Detail</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/news-detail.css">
+</head>
+<body class="sidebar-hidden">
+    <app-sidebar></app-sidebar>
+    <div class="main-content">
+        <app-header></app-header>
+        <div class="container">
+            <!-- Loading State -->
+            <div id="loading" class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Loading news...</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="error-container" class="error-container" style="display: none;">
+                <div class="error-message">
+                    <h2>⚠️ Error Loading News</h2>
+                    <p id="error-text">Failed to load news item.</p>
+                    <button onclick="location.reload()" class="btn-primary">Try Again</button>
+                    <a href="news.html" class="btn-secondary">Back to News</a>
+                </div>
+            </div>
+
+            <!-- News Content -->
+            <div id="news-content" class="news-detail-container" style="display: none;">
+                <!-- Back Navigation -->
+                <div class="news-nav">
+                    <a href="news.html" class="btn-back">
+                        <span class="back-icon">←</span>
+                        Back to News
+                    </a>
+                </div>
+
+                <!-- News Header -->
+                <div class="news-header-detail">
+                    <h1 id="news-title">Loading...</h1>
+                    <div class="news-meta">
+                        <span class="news-date" id="news-date">Loading...</span>
+                    </div>
+                </div>
+
+                <!-- Cover Image -->
+                <div class="news-cover-container">
+                    <img id="news-cover" alt="News cover" class="news-cover-image">
+                </div>
+
+                <!-- Content Blocks -->
+                <div id="news-content-blocks" class="news-content-blocks">
+                    <!-- Content blocks will be populated here -->
+                </div>
+
+                <!-- Additional Images Gallery -->
+                <div id="news-gallery" class="news-gallery" style="display: none;">
+                    <h3>Gallery</h3>
+                    <div id="news-images-grid" class="news-images-grid">
+                        <!-- Images will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="news-actions">
+                    <button id="edit-news-btn" class="btn-primary">Edit News</button>
+                    <button id="delete-news-btn" class="btn-delete">Delete News</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal for Gallery -->
+    <div id="image-modal" class="image-modal" style="display: none;">
+        <div class="image-modal-content">
+            <span class="image-modal-close">&times;</span>
+            <img id="modal-image" alt="Full size image">
+            <div class="image-modal-nav">
+                <button id="prev-image" class="nav-btn">❮</button>
+                <button id="next-image" class="nav-btn">❯</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../components/sidebar.js"></script>
+    <script src="../components/header.js"></script>
+    <script src="../assets/js/news-detail.js"></script>
+</body>
+</html>

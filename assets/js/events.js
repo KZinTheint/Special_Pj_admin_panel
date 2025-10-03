@@ -264,9 +264,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const files = e.dataTransfer?.files;
       if (files && files.length) onFiles(files);
     });
-    dropzone.addEventListener('click', () => {
+    dropzone.addEventListener('click', (e) => {
       const input = dropzone.querySelector('input[type="file"]');
-      if (input) input.click();
+      if (e.target !== input) {
+        e.preventDefault();
+        input.click();
+      }
     });
     dropzone.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {

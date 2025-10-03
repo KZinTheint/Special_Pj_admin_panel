@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Image Upload</title>
+    <style>
+        .dropzone {
+            position: relative;
+            border: 2px dashed #ccc;
+            border-radius: 12px;
+            padding: 2rem;
+            background: #f9f9f9;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+        
+        .dropzone:hover {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+        }
+        
+        .dropzone.dragover {
+            border-color: #1d4ed8;
+            background: rgba(59, 130, 246, 0.08);
+        }
+        
+        .dropzone input[type="file"] {
+            display: none;
+        }
+        
+        .preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .thumb {
+            position: relative;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .thumb img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+        }
+        
+        .thumb-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Debug Image Upload</h1>
+    
+    <h2>Cover Image</h2>
+    <div id="cover-dropzone" class="dropzone">
+        <div>
+            <strong>Click to upload</strong> or drag & drop
+            <div>JPG, PNG up to 5MB</div>
+        </div>
+        <input type="file" id="cover_image" accept="image/*">
+    </div>
+    <div>
+        <img id="cover-preview" style="display:none; max-width: 300px; margin-top: 10px;" />
+    </div>
+    
+    <h2>Multiple Images</h2>
+    <div id="images-dropzone" class="dropzone">
+        <div>
+            <strong>Click to upload</strong> or drag & drop
+            <div>You can select multiple images</div>
+        </div>
+        <input type="file" id="images" accept="image/*" multiple>
+    </div>
+    <div class="preview" id="images-preview"></div>
+    <div id="images-hint">0/10 selected</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const coverInput = document.getElementById('cover_image');
+            const imagesInput = document.getElementById('images');
+            const coverPreview = document.getElementById('cover-preview');
+            const imagesPreview = document.getElementById('images-preview');
+            const coverDropzone = document.getElementById('cover-dropzone');
+            const imagesDropzone = document.getElementById('images-dropzone');
+            const imagesHint = document.getElementById('images-hint');
+
+            let imagesDT = new DataTransfer();
+
+            function updateCoverPreview(file) {
+                if (!file || !coverPreview) return;
+                const url = URL.createObjectURL(file);
+                coverPreview.src = url;
+                coverPreview.style.display = 'block';
+            }
+
+            function refreshImagesPreview() {
+                if (!imagesPreview || !imagesHint) return;
+                imagesPreview.innerHTML = '';
+                const files = Array.from(imagesDT.files);
+                files.forEach((file, idx) => {
+                    const url = URL.createObjectURL(file);
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'thumb';
+                    wrapper.innerHTML = `
+                        <img src="${url}" alt="Image ${idx + 1}">
+                        <button type="button" class="thumb-remove">×</button>
+                    `;
+                    wrapper.querySelector('.thumb-remove').addEventListener('click', () => {
+                        const dt = new DataTransfer();
+                        Array.from(imagesDT.files).forEach((f, i) => {
+                            if (i !== idx) dt.items.add(f);
+                        });
+                        imagesDT = dt;
+                        imagesInput.files = imagesDT.files;
+                        refreshImagesPreview();
+                    });
+                    imagesPreview.appendChild(wrapper);
+                });
+                imagesHint.textContent = `${files.length}/10 selected`;
+            }
+
+            function addImages(files) {
+                const current = Array.from(imagesDT.files);
+                const toAdd = Array.from(files).filter(f => f.type.startsWith('image/'));
+                const totalAllowed = 10 - current.length;
+                const finalAdd = toAdd.slice(0, Math.max(0, totalAllowed));
+                if (toAdd.length > finalAdd.length) {
+                    alert('You can upload up to 10 images in total. Extra files were ignored.');
+                }
+                const dt = new DataTransfer();
+                [...current, ...finalAdd].forEach(f => dt.items.add(f));
+                imagesDT = dt;
+                imagesInput.files = imagesDT.files;
+                refreshImagesPreview();
+            }
+
+            // Cover input change handler
+            if (coverInput) {
+                coverInput.addEventListener('change', (e) => {
+                    const file = e.target.files && e.target.files[0];
+                    if (file && file.type.startsWith('image/')) {
+                        updateCoverPreview(file);
+                    }
+                });
+            }
+
+            // Images input change handler
+            if (imagesInput) {
+                imagesInput.addEventListener('change', (e) => {
+                    if (e.target.files && e.target.files.length) {
+                        addImages(e.target.files);
+                    }
+                });
+            }
+
+            // Dropzone setup function
+            function setupDropzone(dropzone, onFiles) {
+                if (!dropzone) {
+                    return;
+                }
+                
+                const addDragOver = (e) => {
+                    e.preventDefault();
+                    dropzone.classList.add('dragover');
+                };
+                
+                const removeDragOver = (e) => {
+                    e.preventDefault();
+                    dropzone.classList.remove('dragover');
+                };
+                
+                dropzone.addEventListener('dragover', addDragOver);
+                dropzone.addEventListener('dragleave', removeDragOver);
+                dropzone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropzone.classList.remove('dragover');
+                    const files = e.dataTransfer?.files;
+                    if (files && files.length) onFiles(files);
+                });
+                
+                dropzone.addEventListener('click', (e) => {
+                    const input = dropzone.querySelector('input[type="file"]');
+                    if (e.target !== input) {
+                        e.preventDefault();
+                        input.click();
+                    }
+                });
+            }
+
+            // Setup dropzones
+            setupDropzone(coverDropzone, (files) => {
+                const file = files[0];
+                if (file && file.type.startsWith('image/')) {
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    coverInput.files = dt.files;
+                    updateCoverPreview(file);
+                }
+            });
+
+            setupDropzone(imagesDropzone, (files) => {
+                addImages(files);
+            });
+        });
+    </script>
+</body>
+</html>

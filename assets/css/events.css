@@ -449,6 +449,7 @@
     height: 100%;
     opacity: 0;
     cursor: pointer;
+    z-index: 1;
 }
 
 .dropzone-instructions {

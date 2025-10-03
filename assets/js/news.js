@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!res.ok) throw new Error('Failed to fetch news');
       const result = await res.json();
       if (!result.success) throw new Error(result.message || 'Failed to fetch news');
-      populateNewsGrid(result.data);
+      populateNewsGrid(result.data.news);
     } catch (err) {
       console.error(err);
       newsGrid.innerHTML = '<p>Error fetching news. Please try again later.</p>';
@@ -77,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <p>${newsItem.created_at ? new Date(newsItem.created_at).toLocaleDateString() : 'Recently published'}</p>
         </div>
         <div class="news-card-actions">
+          <button class="btn-view" data-id="${newsItem.id}">View Details</button>
           <button class="btn-delete" data-id="${newsItem.id}">Delete</button>
         </div>
       `;
@@ -87,6 +88,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Grid Button Handlers ---
   newsGrid.addEventListener('click', async (e) => {
     const newsId = e.target.dataset.id;
+    
+    if (e.target.classList.contains('btn-view')) {
+      // Navigate to news detail page
+      window.location.href = `news-detail.html?id=${newsId}`;
+      return;
+    }
+    
     if (e.target.classList.contains('btn-delete')) {
       if (confirm('Are you sure you want to delete this news?')) {
         try {
@@ -264,9 +272,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const files = e.dataTransfer?.files;
       if (files && files.length) onFiles(files);
     });
-    dropzone.addEventListener('click', () => {
+    dropzone.addEventListener('click', (e) => {
       const input = dropzone.querySelector('input[type="file"]');
-      if (input) input.click();
+      if (e.target !== input) {
+        e.preventDefault();
+        input.click();
+      }
     });
     dropzone.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
