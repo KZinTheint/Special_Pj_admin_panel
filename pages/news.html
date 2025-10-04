@@ -65,6 +65,21 @@
                         <div class="preview-grid" id="images-preview-grid"></div>
                         <small id="images-hint" class="form-hint">0/10 selected. First image may be used as thumbnail.</small>
                     </div>
+                    <div class="form-group">
+                        <label for="files">Attachments (optional)</label>
+                        <div id="files-dropzone" class="dropzone" tabindex="0" aria-label="Files dropzone">
+                            <div class="dropzone-instructions">
+                                <span class="dz-icon">📎</span>
+                                <div>
+                                    <strong>Click to upload</strong> or drag & drop
+                                    <div class="hint">PDF, DOC, XLS, TXT files (up to 5)</div>
+                                </div>
+                            </div>
+                            <input type="file" id="files" name="files" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar" multiple aria-describedby="files-hint">
+                        </div>
+                        <div id="files-preview-list" class="files-preview-list"></div>
+                        <small id="files-hint" class="form-hint">0/5 selected. Maximum 10MB per file.</small>
+                    </div>
                     <h3>Content Blocks</h3>
                     <div id="content-blocks-container"></div>
                     <button type="button" id="add-content-block" class="btn-secondary">Add Content Block</button>
@@ -104,6 +119,14 @@
                     <div class="form-group">
                         <label for="edit-images">Upload More Images (up to 10)</label>
                         <input type="file" id="edit-images" name="images" accept="image/*" multiple>
+                    </div>
+                    <div class="form-group">
+                        <label>Existing Attachments</label>
+                        <div id="existing-files-container" class="existing-files-list"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-files">Upload More Attachments (up to 5)</label>
+                        <input type="file" id="edit-files" name="files" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar" multiple>
                     </div>
                     <h3>Content Blocks</h3>
                     <div id="edit-content-blocks-container"></div>

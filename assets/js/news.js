@@ -16,14 +16,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Enhanced UI Elements ---
   const coverInput = document.getElementById('cover_image');
   const imagesInput = document.getElementById('images');
+  const filesInput = document.getElementById('files');
   const coverPreview = document.getElementById('cover-preview');
   const imagesPreviewGrid = document.getElementById('images-preview-grid');
+  const filesPreviewList = document.getElementById('files-preview-list');
   const coverDropzone = document.getElementById('cover-dropzone');
   const imagesDropzone = document.getElementById('images-dropzone');
+  const filesDropzone = document.getElementById('files-dropzone');
   const imagesHint = document.getElementById('images-hint');
+  const filesHint = document.getElementById('files-hint');
 
-  // DataTransfer to manage multiple image selection and removal
+  // DataTransfer to manage multiple file selection and removal
   let imagesDT = new DataTransfer();
+  let filesDT = new DataTransfer();
 
   // --- Modal Handling ---
   const openModal = (modal) => modal.style.display = 'flex';
@@ -35,9 +40,12 @@ document.addEventListener('DOMContentLoaded', () => {
     createContentCount = 0;
     // reset UI previews and counters
     imagesDT = new DataTransfer();
+    filesDT = new DataTransfer();
     if (imagesPreviewGrid) imagesPreviewGrid.innerHTML = '';
+    if (filesPreviewList) filesPreviewList.innerHTML = '';
     if (coverPreview) { coverPreview.src = ''; coverPreview.style.display = 'none'; }
     if (imagesHint) imagesHint.textContent = '0/10 selected. First image may be used as thumbnail.';
+    if (filesHint) filesHint.textContent = '0/5 selected. Maximum 10MB per file.';
     openModal(createModal);
   });
   createCloseBtn.addEventListener('click', () => closeModal(createModal));
@@ -118,9 +126,12 @@ document.addEventListener('DOMContentLoaded', () => {
   createForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // Ensure images input reflects current imagesDT selection
+    // Ensure images and files inputs reflect current DataTransfer selections
     if (imagesInput) {
       imagesInput.files = imagesDT.files;
+    }
+    if (filesInput) {
+      filesInput.files = filesDT.files;
     }
 
     const formData = new FormData(e.target);
@@ -299,6 +310,101 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   setupDropzone(imagesDropzone, (files) => addImages(files));
+
+  // --- File Handling Functions ---
+  function getFileIcon(fileName) {
+    const ext = fileName.split('.').pop().toLowerCase();
+    const iconMap = {
+      pdf: '📄',
+      doc: '📝', docx: '📝',
+      xls: '📊', xlsx: '📊',
+      txt: '📄',
+      zip: '🗜️', rar: '🗜️'
+    };
+    return iconMap[ext] || '📎';
+  }
+
+  function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  function refreshFilesPreview() {
+    if (!filesPreviewList || !filesHint) return;
+    filesPreviewList.innerHTML = '';
+    const files = Array.from(filesDT.files);
+    files.forEach((file, idx) => {
+      const fileItem = document.createElement('div');
+      fileItem.className = 'file-item';
+      fileItem.innerHTML = `
+        <div class="file-info">
+          <span class="file-icon">${getFileIcon(file.name)}</span>
+          <div class="file-details">
+            <div class="file-name">${file.name}</div>
+            <div class="file-size">${formatFileSize(file.size)}</div>
+          </div>
+        </div>
+        <button type="button" class="file-remove" aria-label="Remove file">×</button>
+      `;
+      fileItem.querySelector('.file-remove').addEventListener('click', () => {
+        // Remove this file from DataTransfer
+        const dt = new DataTransfer();
+        Array.from(filesDT.files).forEach((f, i) => {
+          if (i !== idx) dt.items.add(f);
+        });
+        filesDT = dt;
+        filesInput.files = filesDT.files;
+        refreshFilesPreview();
+      });
+      filesPreviewList.appendChild(fileItem);
+    });
+    filesHint.textContent = `${files.length}/5 selected. Maximum 10MB per file.`;
+  }
+
+  function addFiles(files) {
+    const current = Array.from(filesDT.files);
+    const toAdd = Array.from(files).filter(f => {
+      // Check file type
+      const allowedTypes = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.txt', '.zip', '.rar'];
+      const ext = '.' + f.name.split('.').pop().toLowerCase();
+      if (!allowedTypes.includes(ext)) return false;
+      
+      // Check file size (10MB limit)
+      if (f.size > 10 * 1024 * 1024) {
+        alert(`File "${f.name}" is too large. Maximum size is 10MB.`);
+        return false;
+      }
+      return true;
+    });
+    const totalAllowed = 5 - current.length;
+    const finalAdd = toAdd.slice(0, Math.max(0, totalAllowed));
+    if (toAdd.length > finalAdd.length) {
+      alert('You can upload up to 5 files in total. Extra files were ignored.');
+    }
+    if (finalAdd.length === 0 && toAdd.length > 0) {
+      alert('No valid files to add. Please check file types and sizes.');
+    }
+    const dt = new DataTransfer();
+    [...current, ...finalAdd].forEach(f => dt.items.add(f));
+    filesDT = dt;
+    filesInput.files = filesDT.files;
+    refreshFilesPreview();
+  }
+
+  // Files input change handler
+  if (filesInput) {
+    filesInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files.length) {
+        addFiles(e.target.files);
+      }
+    });
+  }
+
+  // Setup files dropzone
+  setupDropzone(filesDropzone, (files) => addFiles(files));
 
   // --- Initial Load ---
   fetchNews();

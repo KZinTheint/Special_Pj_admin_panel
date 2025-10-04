@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const newsContentBlocks = document.getElementById('news-content-blocks');
   const newsGallery = document.getElementById('news-gallery');
   const newsImagesGrid = document.getElementById('news-images-grid');
+  const newsFiles = document.getElementById('news-files');
+  const newsFilesList = document.getElementById('news-files-list');
   const editNewsBtn = document.getElementById('edit-news-btn');
   const deleteNewsBtn = document.getElementById('delete-news-btn');
   
@@ -108,6 +110,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Populate gallery
     populateGallery(newsItem.images || []);
+    
+    // Populate files
+    populateFiles(newsItem.files || []);
   }
   
   // Populate content blocks
@@ -155,6 +160,56 @@ document.addEventListener('DOMContentLoaded', () => {
       imageElement.innerHTML = `<img src="${image}" alt="Gallery image ${index + 1}">`;
       imageElement.addEventListener('click', () => openImageModal(index));
       newsImagesGrid.appendChild(imageElement);
+    });
+  }
+  
+  // File utility functions
+  function getFileIcon(fileName) {
+    const ext = fileName.split('.').pop().toLowerCase();
+    const iconMap = {
+      pdf: '📄',
+      doc: '📝', docx: '📝',
+      xls: '📊', xlsx: '📊',
+      txt: '📄',
+      zip: '🗜️', rar: '🗜️',
+      ppt: '📈', pptx: '📈'
+    };
+    return iconMap[ext] || '📎';
+  }
+  
+  function formatFileSize(bytes) {
+    if (!bytes || bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+  
+  // Populate files
+  function populateFiles(files) {
+    if (!files || files.length === 0) {
+      newsFiles.style.display = 'none';
+      return;
+    }
+    
+    newsFiles.style.display = 'block';
+    newsFilesList.innerHTML = '';
+    
+    files.forEach((file) => {
+      const fileElement = document.createElement('div');
+      fileElement.className = 'file-item-detail';
+      fileElement.innerHTML = `
+        <div class="file-item-info">
+          <span class="file-item-icon">${getFileIcon(file.name || file.filename || 'file')}</span>
+          <div class="file-item-details">
+            <div class="file-item-name">${escapeHtml(file.name || file.filename || 'Attachment')}</div>
+          </div>
+        </div>
+        <a href="${file.url}" class="" download target="_blank">
+          <span class="download-icon">⇩</span>
+        </a>
+      `;
+      newsFilesList.appendChild(fileElement);
     });
   }
   
