@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
           const res = await fetch(`${API_URL}/${newsId}`, { method: 'DELETE' });
           const result = await res.json();
-          if (result.success) {
+          if (result.result.success) {
             alert('News deleted successfully!');
             fetchNews();
           } else {

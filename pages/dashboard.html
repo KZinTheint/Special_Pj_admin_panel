@@ -14,6 +14,15 @@
         <main class="dashboard-content">
             <header class="dashboard-header">
                 <h1>Student Applications</h1>
+                <div class="search-container">
+                    <select id="search-type">
+                        <option value="name">Name</option>
+                        <option value="formId">Form-ID</option>
+                        <option value="nrc">NRC</option>
+                    </select>
+                    <input type="text" id="search-input" placeholder="Search...">
+                    <button id="search-button">Search</button>
+                </div>
                 <div id="delete-action" class="delete-icon-container" title="Delete Selected">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="delete-icon">
                         <polyline points="3 6 5 6 21 6"></polyline>

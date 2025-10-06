@@ -2,6 +2,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const dataContainer = document.getElementById('data-container');
     const loadingIndicator = document.getElementById('loading-indicator');
     const deleteButton = document.getElementById('delete-action');
+    const searchButton = document.getElementById('search-button');
+    const searchInput = document.getElementById('search-input');
+    const searchType = document.getElementById('search-type');
 
     const apiUrl = 'http://localhost:3000/registeration';
     const fileApiUrl = 'http://localhost:3000/registeration/file'; // new endpoint for signed URL
@@ -28,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return `
                 <tr data-id="${student.id}">
                     <td><input type="checkbox" class="row-checkbox"></td>
+                    <td>${student.form_id}</td>
                     <td>${student.first_name} ${student.last_name}</td>
                     <td>${student.email}</td>
                     <td>${student.phone_number}</td>
@@ -48,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <thead>
                         <tr>
                             <th><input type="checkbox" id="select-all-checkbox"></th>
+                            <th>Form-ID</th>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Phone</th>
@@ -120,7 +125,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const fetchData = async () => {
         try {
             loadingIndicator.style.display = 'block';
-            const response = await fetch(apiUrl);
+            dataContainer.innerHTML = '';
+            const query = searchInput.value;
+            const type = searchType.value;
+            const url = query ? `${apiUrl}?type=${type}&query=${query}` : apiUrl;
+            const response = await fetch(url);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const result = await response.json();
             
@@ -166,5 +175,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     deleteButton.addEventListener('click', handleDelete);
+    searchButton.addEventListener('click', fetchData);
     fetchData();
 });
