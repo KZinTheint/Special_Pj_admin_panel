@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Detail</title>
+    <title>Event Details - MIIT Admin</title>
     <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../assets/css/news-detail.css">
+    <link rel="stylesheet" href="../assets/css/event-detail.css">
 </head>
 <body class="sidebar-hidden">
     <app-sidebar></app-sidebar>
@@ -15,63 +15,56 @@
             <!-- Loading State -->
             <div id="loading" class="loading-container">
                 <div class="loading-spinner"></div>
-                <p>Loading news...</p>
+                <p>Loading event details...</p>
             </div>
 
             <!-- Error State -->
             <div id="error-container" class="error-container" style="display: none;">
                 <div class="error-message">
-                    <h2>⚠️ Error Loading News</h2>
-                    <p id="error-text">Failed to load news item.</p>
+                    <h2>⚠️ Error Loading Event</h2>
+                    <p id="error-text">Failed to load event details.</p>
                     <button onclick="location.reload()" class="btn-primary">Try Again</button>
-                    <a href="news.html" class="btn-secondary">Back to News</a>
+                    <a href="events.html" class="btn-secondary">Back to Events</a>
                 </div>
             </div>
 
-            <!-- News Content -->
-            <div id="news-content" class="news-detail-container" style="display: none;">
+            <!-- Event Content -->
+            <div id="event-content" class="event-detail-container" style="display: none;">
                 <!-- Navigation with Actions -->
-                <div class="news-nav">
-                    <a href="news.html" class="btn-back">
+                <div class="event-nav">
+                    <a href="events.html" class="btn-back">
                         <span class="back-icon">←</span>
-                        Back to News
+                        Back to Events
                     </a>
-                    <div class="news-nav-actions">
-                        <button id="delete-news-btn" class="btn-delete">Delete News</button>
-                    </div>
+                <div class="event-nav-actions">
+                    <button id="delete-event-btn" class="btn-delete">Delete Event</button>
+                </div>
                 </div>
 
-                <!-- News Header -->
-                <div class="news-header-detail">
-                    <h1 id="news-title">Loading...</h1>
-                    <div class="news-meta">
-                        <span class="news-date" id="news-date">Loading...</span>
+                <!-- Event Header -->
+                <div class="event-header-detail">
+                    <h1 id="event-title">Loading...</h1>
+                    <div class="event-meta">
+                        <span class="event-date" id="event-date">Loading...</span>
+                        <span class="event-location" id="event-location" style="display: none;"></span>
                     </div>
                 </div>
 
                 <!-- Cover Image -->
-                <div class="news-cover-container">
-                    <img id="news-cover" alt="News cover" class="news-cover-image">
+                <div class="event-cover-container">
+                    <img id="event-cover" alt="Event cover" class="event-cover-image">
                 </div>
 
                 <!-- Content Blocks -->
-                <div id="news-content-blocks" class="news-content-blocks">
+                <div id="event-content-blocks" class="event-content-blocks">
                     <!-- Content blocks will be populated here -->
                 </div>
 
                 <!-- Additional Images Gallery -->
-                <div id="news-gallery" class="news-gallery" style="display: none;">
-                    <h3>Gallery</h3>
-                    <div id="news-images-grid" class="news-images-grid">
+                <div id="event-gallery" class="event-gallery" style="display: none;">
+                    <h3>Event Gallery</h3>
+                    <div id="event-images-grid" class="event-images-grid">
                         <!-- Images will be populated here -->
-                    </div>
-                </div>
-
-                <!-- Files & Attachments -->
-                <div id="news-files" class="news-files" style="display: none;">
-                    <h3>Attachments</h3>
-                    <div id="news-files-list" class="news-files-list">
-                        <!-- Files will be populated here -->
                     </div>
                 </div>
 
@@ -93,6 +86,6 @@
 
     <script src="../components/sidebar.js"></script>
     <script src="../components/header.js"></script>
-    <script src="../assets/js/news-detail.js"></script>
+    <script src="../assets/js/event-detail.js"></script>
 </body>
 </html>

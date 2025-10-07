@@ -114,6 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
     events.forEach(event => {
       const eventCard = document.createElement('div');
       eventCard.className = 'event-card';
+      eventCard.dataset.id = event.id;
+      eventCard.style.cursor = 'pointer';
       eventCard.innerHTML = `
         <img src="${event.cover_url}" alt="${event.title}" class="event-card-image">
         <div class="event-card-content">
@@ -130,8 +132,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Grid Button Handlers ---
   eventsGrid.addEventListener('click', async (e) => {
-    const eventId = e.target.dataset.id;
+    // Handle delete button clicks
     if (e.target.classList.contains('btn-delete')) {
+      e.stopPropagation(); // Prevent card click
+      const eventId = e.target.dataset.id;
+      
       if (confirm('Are you sure you want to delete this event?')) {
         const deleteButton = e.target;
         try {
@@ -155,6 +160,15 @@ document.addEventListener('DOMContentLoaded', () => {
           showPageLoading(false);
         }
       }
+      return;
+    }
+
+    // Handle event card clicks (for viewing details)
+    const eventCard = e.target.closest('.event-card');
+    if (eventCard && eventCard.dataset.id) {
+      const eventId = eventCard.dataset.id;
+      // Navigate to event detail page
+      window.location.href = `event-detail.html?id=${eventId}`;
     }
   });
 

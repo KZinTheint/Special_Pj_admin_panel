@@ -23,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const newsImagesGrid = document.getElementById('news-images-grid');
   const newsFiles = document.getElementById('news-files');
   const newsFilesList = document.getElementById('news-files-list');
-  const editNewsBtn = document.getElementById('edit-news-btn');
   const deleteNewsBtn = document.getElementById('delete-news-btn');
   
   // Image modal elements
@@ -275,11 +274,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   // Event listeners
-  editNewsBtn.addEventListener('click', () => {
-    // Redirect to news page with edit mode
-    window.location.href = `news.html?edit=${newsId}`;
-  });
-  
   deleteNewsBtn.addEventListener('click', deleteNews);
   
   // Image modal event listeners
