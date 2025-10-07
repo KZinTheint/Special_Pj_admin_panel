@@ -1,6 +1,11 @@
 class Header extends HTMLElement {
     constructor() {
         super();
+        // Determine the correct path to assets based on current location
+        const currentPath = window.location.pathname;
+        const isInSubfolder = currentPath.includes('/pages/');
+        const logoPath = isInSubfolder ? '../assets/images/MIIT_Logo.png' : 'assets/images/MIIT_Logo.png';
+        
         this.innerHTML = `
             <div class="header">
                 <div class="header-left">
@@ -11,9 +16,12 @@ class Header extends HTMLElement {
                             <line x1="3" y1="18" x2="21" y2="18"></line>
                         </svg>
                     </button>
-                    <div>
-                        <h1>MIIT Admin Panel</h1>
-                        <p style="margin: 0; font-size: 0.875rem; color: var(--text-light);">Student Management System</p>
+                    <div class="header-branding">
+                        <img src="${logoPath}" alt="MIIT Logo" class="header-logo">
+                        <div>
+                            <h1>Admin Panel</h1>
+                            <p style="margin: 0; font-size: 0.875rem; color: var(--text-light);">Student Management System</p>
+                        </div>
                     </div>
                 </div>
                 <div class="header-right">

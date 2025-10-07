@@ -114,6 +114,22 @@ body.sidebar-hidden .sidebar {
     box-shadow: var(--shadow-md);
 }
 
+.logo-image {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    border-radius: 12px;
+    background: var(--white);
+    padding: 6px;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+}
+
+.logo-image:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+}
+
 .sidebar-header h2 {
     margin: 0;
     font-size: 1.5rem;
@@ -215,6 +231,28 @@ body.sidebar-hidden .main-content {
     display: flex;
     align-items: center;
     gap: 1rem;
+}
+
+.header-branding {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.header-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: var(--white);
+    padding: 4px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.header-logo:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-md);
 }
 
 .header h1 {

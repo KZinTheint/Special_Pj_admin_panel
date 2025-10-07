@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const apiUrl = 'http://localhost:3000/registeration';
     const fileApiUrl = 'http://localhost:3000/registeration/file'; // new endpoint for signed URL
+    
+    // Store all student data for frontend filtering
+    let allStudentData = [];
 
     const renderData = (data) => {
         if (!data || data.length === 0) {
@@ -122,19 +125,61 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    // Frontend search filtering function
+    const filterStudentData = (data, searchQuery, searchType) => {
+        if (!searchQuery || searchQuery.trim() === '') {
+            return data; // Return all data if no search query
+        }
+
+        const query = searchQuery.toLowerCase().trim();
+        
+        return data.filter(student => {
+            switch (searchType) {
+                case 'formId':
+                    return student.form_id && student.form_id.toLowerCase().includes(query);
+                    
+                case 'name':
+                    const fullName = `${student.first_name || ''} ${student.last_name || ''}`.toLowerCase();
+                    return fullName.includes(query);
+                    
+                case 'nrc':
+                    const nrcString = `${student.national_id_prefix || ''}/${student.national_id_region || ''}/${student.citizen_type || ''}${student.national_id_number || ''}`.toLowerCase();
+                    return nrcString.includes(query);
+                    
+                default:
+                    return false;
+            }
+        });
+    };
+
+    // Function to perform search and render results
+    const performSearch = () => {
+        const searchQuery = searchInput.value;
+        const searchTypeValue = searchType.value;
+        
+        const filteredData = filterStudentData(allStudentData, searchQuery, searchTypeValue);
+        renderData(filteredData);
+    };
+
     const fetchData = async () => {
         try {
             loadingIndicator.style.display = 'block';
             dataContainer.innerHTML = '';
-            const query = searchInput.value;
-            const type = searchType.value;
-            const url = query ? `${apiUrl}?type=${type}&query=${query}` : apiUrl;
-            const response = await fetch(url);
+            
+            // Always fetch all data (no search parameters)
+            const response = await fetch(apiUrl);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const result = await response.json();
             
             if (result.success && Array.isArray(result.data)) {
-                renderData(result.data);
+                // Store all data for frontend filtering
+                allStudentData = result.data;
+                
+                // Render all data initially, or filtered data if there's a search query
+                const searchQuery = searchInput.value;
+                const searchTypeValue = searchType.value;
+                const filteredData = filterStudentData(allStudentData, searchQuery, searchTypeValue);
+                renderData(filteredData);
             } else {
                 dataContainer.innerHTML = '<p>Failed to fetch valid data.</p>';
             }
@@ -175,6 +220,16 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     deleteButton.addEventListener('click', handleDelete);
-    searchButton.addEventListener('click', fetchData);
+    
+    // Update search button to use frontend search instead of fetchData
+    searchButton.addEventListener('click', performSearch);
+    
+    // Add real-time search as user types
+    searchInput.addEventListener('input', performSearch);
+    
+    // Add event listener for search type change
+    searchType.addEventListener('change', performSearch);
+    
+    // Initial data fetch
     fetchData();
 });
