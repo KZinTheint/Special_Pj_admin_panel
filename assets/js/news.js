@@ -13,6 +13,50 @@ document.addEventListener('DOMContentLoaded', () => {
   let createContentCount = 0;
   const MAX_BLOCKS = 10;
 
+  // --- Loading State Management ---
+  function showLoadingSpinner(element, text = 'Loading...') {
+    const originalContent = element.innerHTML;
+    element.dataset.originalContent = originalContent;
+    element.disabled = true;
+    element.innerHTML = `
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+        <span>${text}</span>
+      </div>
+    `;
+    element.classList.add('loading');
+    return originalContent;
+  }
+
+  function hideLoadingSpinner(element) {
+    const originalContent = element.dataset.originalContent;
+    if (originalContent) {
+      element.innerHTML = originalContent;
+      delete element.dataset.originalContent;
+    }
+    element.disabled = false;
+    element.classList.remove('loading');
+  }
+
+  function showPageLoading(show = true) {
+    let loadingOverlay = document.getElementById('page-loading-overlay');
+    
+    if (show && !loadingOverlay) {
+      loadingOverlay = document.createElement('div');
+      loadingOverlay.id = 'page-loading-overlay';
+      loadingOverlay.className = 'page-loading-overlay';
+      loadingOverlay.innerHTML = `
+        <div class="page-loading-content">
+          <div class="page-spinner"></div>
+          <p>Processing...</p>
+        </div>
+      `;
+      document.body.appendChild(loadingOverlay);
+    } else if (!show && loadingOverlay) {
+      loadingOverlay.remove();
+    }
+  }
+
   // --- Enhanced UI Elements ---
   const coverInput = document.getElementById('cover_image');
   const imagesInput = document.getElementById('images');
@@ -105,18 +149,26 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (e.target.classList.contains('btn-delete')) {
       if (confirm('Are you sure you want to delete this news?')) {
+        const deleteButton = e.target;
         try {
+          showLoadingSpinner(deleteButton, 'Deleting...');
+          showPageLoading(true);
+          
           const res = await fetch(`${API_URL}/${newsId}`, { method: 'DELETE' });
           const result = await res.json();
+          
           if (result.result.success) {
             alert('News deleted successfully!');
-            fetchNews();
+            await fetchNews();
           } else {
             alert('Failed to delete news: ' + result.message);
           }
         } catch (err) {
           console.error(err);
           alert('Error deleting news.');
+        } finally {
+          hideLoadingSpinner(deleteButton);
+          showPageLoading(false);
         }
       }
     }
@@ -126,42 +178,71 @@ document.addEventListener('DOMContentLoaded', () => {
   createForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // Ensure images and files inputs reflect current DataTransfer selections
-    if (imagesInput) {
-      imagesInput.files = imagesDT.files;
-    }
-    if (filesInput) {
-      filesInput.files = filesDT.files;
-    }
-
-    const formData = new FormData(e.target);
-
-    const contents = [];
-    for (let i = 0; i < createContentCount; i++) {
-      const subheading = formData.get(`subheading-${i}`) || null;
-      const description = formData.get(`description-${i}`) || null;
-      if (subheading || description) {
-        contents.push({ subheading, description });
-      }
-      formData.delete(`subheading-${i}`);
-      formData.delete(`description-${i}`);
-    }
-    formData.append('content', JSON.stringify(contents));
-
+    const submitButton = e.target.querySelector('button[type="submit"]');
+    const formElements = e.target.querySelectorAll('button, input, textarea, select');
+    
     try {
+      // Ensure inputs reflect current DataTransfer selections FIRST
+      if (imagesInput) {
+        imagesInput.files = imagesDT.files;
+      }
+      if (filesInput) {
+        filesInput.files = filesDT.files;
+      }
+
+      // Create FormData BEFORE disabling elements
+      const formData = new FormData(e.target);
+
+      // NOW disable all form elements and show loading
+      showLoadingSpinner(submitButton, 'Creating News...');
+      formElements.forEach(el => {
+        if (el !== submitButton) el.disabled = true;
+      });
+      showPageLoading(true);
+
+      const contents = [];
+      for (let i = 0; i < createContentCount; i++) {
+        const subheading = formData.get(`subheading-${i}`) || null;
+        const description = formData.get(`description-${i}`) || null;
+        if (subheading || description) {
+          contents.push({ subheading, description });
+        }
+        formData.delete(`subheading-${i}`);
+        formData.delete(`description-${i}`);
+      }
+      formData.append('content', JSON.stringify(contents));
+
       const res = await fetch(API_URL, { method: 'POST', body: formData });
       const result = await res.json();
+      
       if (result.success) {
         alert('News created successfully!');
         closeModal(createModal);
         e.target.reset();
-        fetchNews();
+        // Reset UI state
+        imagesDT = new DataTransfer();
+        filesDT = new DataTransfer();
+        if (imagesPreviewGrid) imagesPreviewGrid.innerHTML = '';
+        if (filesPreviewList) filesPreviewList.innerHTML = '';
+        if (coverPreview) { coverPreview.src = ''; coverPreview.style.display = 'none'; }
+        if (imagesHint) imagesHint.textContent = '0/10 selected. First image may be used as thumbnail.';
+        if (filesHint) filesHint.textContent = '0/5 selected. Maximum 10MB per file.';
+        createContentContainer.innerHTML = '';
+        createContentCount = 0;
+        await fetchNews();
       } else {
         alert('Failed to create news: ' + result.message);
       }
     } catch (err) {
       console.error(err);
       alert('Error creating news.');
+    } finally {
+      // Re-enable form elements and hide loading
+      hideLoadingSpinner(submitButton);
+      formElements.forEach(el => {
+        if (el !== submitButton) el.disabled = false;
+      });
+      showPageLoading(false);
     }
   });
 

@@ -12,9 +12,110 @@ document.addEventListener('DOMContentLoaded', () => {
     // Store all student data for frontend filtering
     let allStudentData = [];
 
-    const renderData = (data) => {
+    // Enhanced empty state functions
+    const renderEmptyState = (type = 'no-data', searchQuery = '', searchType = '') => {
+        let emptyStateHtml = '';
+        
+        if (type === 'no-data') {
+            emptyStateHtml = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10,9 9,9 8,9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="empty-state-content">
+                        <h3>No Student Applications Found</h3>
+                        <p>There are currently no student applications in the system. New applications will appear here once students start submitting their forms.</p>
+                        <div class="empty-state-actions">
+                            <button class="empty-state-btn" onclick="location.reload()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="23 4 23 10 17 10"></polyline>
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                </svg>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (type === 'no-results') {
+            const searchTypeDisplay = {
+                'formId': 'Form ID',
+                'name': 'Name', 
+                'nrc': 'NRC'
+            }[searchType] || 'Search';
+            
+            emptyStateHtml = `
+                <div class="empty-state">
+                    <div class="empty-state-icon search-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="M21 21l-4.35-4.35"></path>
+                        </svg>
+                    </div>
+                    <div class="empty-state-content">
+                        <h3>No Results Found</h3>
+                        <p>We couldn't find any student applications matching <strong>"${searchQuery}"</strong> in ${searchTypeDisplay}.</p>
+                        <div class="empty-state-suggestions">
+                            <h4>Try:</h4>
+                            <ul>
+                                <li>Checking your spelling</li>
+                                <li>Using different keywords</li>
+                                <li>Searching in a different field</li>
+                                <li>Clearing the search to see all results</li>
+                            </ul>
+                        </div>
+                        <div class="empty-state-actions">
+                            <button class="empty-state-btn primary" onclick="document.getElementById('search-input').value = ''; document.getElementById('search-input').dispatchEvent(new Event('input'));">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                                Clear Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (type === 'error') {
+            emptyStateHtml = `
+                <div class="empty-state error">
+                    <div class="empty-state-icon error-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+                    <div class="empty-state-content">
+                        <h3>Unable to Load Data</h3>
+                        <p>We encountered an error while loading student applications. Please check your connection and try again.</p>
+                        <div class="empty-state-actions">
+                            <button class="empty-state-btn primary" onclick="location.reload()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="23 4 23 10 17 10"></polyline>
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                </svg>
+                                Try Again
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        return emptyStateHtml;
+    };
+
+    const renderData = (data, isFiltered = false, searchQuery = '', searchType = '') => {
         if (!data || data.length === 0) {
-            dataContainer.innerHTML = '<p>No student data available.</p>';
+            const emptyStateType = isFiltered ? 'no-results' : 'no-data';
+            dataContainer.innerHTML = renderEmptyState(emptyStateType, searchQuery, searchType);
             return;
         }
 
@@ -158,7 +259,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const searchTypeValue = searchType.value;
         
         const filteredData = filterStudentData(allStudentData, searchQuery, searchTypeValue);
-        renderData(filteredData);
+        const isFiltered = searchQuery && searchQuery.trim() !== '';
+        renderData(filteredData, isFiltered, searchQuery, searchTypeValue);
     };
 
     const fetchData = async () => {
@@ -179,13 +281,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const searchQuery = searchInput.value;
                 const searchTypeValue = searchType.value;
                 const filteredData = filterStudentData(allStudentData, searchQuery, searchTypeValue);
-                renderData(filteredData);
+                const isFiltered = searchQuery && searchQuery.trim() !== '';
+                renderData(filteredData, isFiltered, searchQuery, searchTypeValue);
             } else {
-                dataContainer.innerHTML = '<p>Failed to fetch valid data.</p>';
+                dataContainer.innerHTML = renderEmptyState('error');
             }
         } catch (error) {
             console.error("Fetch error:", error);
-            dataContainer.innerHTML = '<p>An error occurred while fetching data. Please check the console for more details.</p>';
+            dataContainer.innerHTML = renderEmptyState('error');
         } finally {
             loadingIndicator.style.display = 'none';
         }

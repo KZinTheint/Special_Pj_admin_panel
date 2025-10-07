@@ -1,36 +1,60 @@
 /* Modern Events Styles */
-.events-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    padding: 2rem;
-    background: var(--container-bg);
-    border-radius: 16px;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-sm);
-    position: relative;
-    overflow: hidden;
+/* Page Title Section */
+.page-title {
+    margin-bottom: 3rem;
+    text-align: center;
 }
 
-.events-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
+.page-title h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
     background: linear-gradient(135deg, var(--miit-primary), var(--miit-secondary), var(--miit-accent));
-}
-
-.events-header h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, var(--header-color), var(--primary-color));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    margin: 0 0 0.5rem 0;
+}
+
+.page-title p {
+    color: var(--text-light);
+    font-size: 1.125rem;
     margin: 0;
+    font-weight: 400;
+}
+
+/* Floating Action Button */
+.floating-action-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: var(--white);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-lg);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+}
+
+.floating-action-btn:hover {
+    transform: scale(1.1) translateY(-2px);
+    box-shadow: var(--shadow-xl);
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+}
+
+.floating-action-btn:active {
+    transform: scale(1.05);
+}
+
+.floating-action-btn svg {
+    width: 24px;
+    height: 24px;
 }
 
 /* Modern Button Styles */
@@ -605,5 +629,113 @@
 
 .btn-remove-block:hover {
     background: #fecaca;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .page-title h1 {
+        font-size: 2rem;
+    }
+    
+    .page-title p {
+        font-size: 1rem;
+    }
+    
+    .floating-action-btn {
+        bottom: 1rem;
+        right: 1rem;
+        width: 56px;
+        height: 56px;
+    }
+    
+    .floating-action-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .events-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .event-card {
+        margin: 0 0.5rem;
+    }
+}
+
+/* Loading Spinner Styles */
+.loading-spinner {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.btn-primary.loading,
+.btn-secondary.loading,
+.btn-delete.loading {
+    opacity: 0.8;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Page Loading Overlay */
+.page-loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+}
+
+.page-loading-content {
+    background: var(--container-bg);
+    padding: 2rem 3rem;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border-color);
+}
+
+.page-loading-content p {
+    margin: 1rem 0 0 0;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.page-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--border-color);
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 

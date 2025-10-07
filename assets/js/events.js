@@ -13,6 +13,50 @@ document.addEventListener('DOMContentLoaded', () => {
   let createContentCount = 0;
   const MAX_BLOCKS = 10;
 
+  // --- Loading State Management ---
+  function showLoadingSpinner(element, text = 'Loading...') {
+    const originalContent = element.innerHTML;
+    element.dataset.originalContent = originalContent;
+    element.disabled = true;
+    element.innerHTML = `
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+        <span>${text}</span>
+      </div>
+    `;
+    element.classList.add('loading');
+    return originalContent;
+  }
+
+  function hideLoadingSpinner(element) {
+    const originalContent = element.dataset.originalContent;
+    if (originalContent) {
+      element.innerHTML = originalContent;
+      delete element.dataset.originalContent;
+    }
+    element.disabled = false;
+    element.classList.remove('loading');
+  }
+
+  function showPageLoading(show = true) {
+    let loadingOverlay = document.getElementById('page-loading-overlay');
+    
+    if (show && !loadingOverlay) {
+      loadingOverlay = document.createElement('div');
+      loadingOverlay.id = 'page-loading-overlay';
+      loadingOverlay.className = 'page-loading-overlay';
+      loadingOverlay.innerHTML = `
+        <div class="page-loading-content">
+          <div class="page-spinner"></div>
+          <p>Processing...</p>
+        </div>
+      `;
+      document.body.appendChild(loadingOverlay);
+    } else if (!show && loadingOverlay) {
+      loadingOverlay.remove();
+    }
+  }
+
   // --- Enhanced UI Elements ---
   const coverInput = document.getElementById('cover_image');
   const imagesInput = document.getElementById('images');
@@ -89,18 +133,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const eventId = e.target.dataset.id;
     if (e.target.classList.contains('btn-delete')) {
       if (confirm('Are you sure you want to delete this event?')) {
+        const deleteButton = e.target;
         try {
+          showLoadingSpinner(deleteButton, 'Deleting...');
+          showPageLoading(true);
+          
           const res = await fetch(`${API_URL}/${eventId}`, { method: 'DELETE' });
           const result = await res.json();
+          
           if (result.success) {
             alert('Event deleted successfully!');
-            fetchEvents();
+            await fetchEvents();
           } else {
             alert('Failed to delete event: ' + result.message);
           }
         } catch (err) {
           console.error(err);
           alert('Error deleting event.');
+        } finally {
+          hideLoadingSpinner(deleteButton);
+          showPageLoading(false);
         }
       }
     }
@@ -110,39 +162,65 @@ document.addEventListener('DOMContentLoaded', () => {
   createForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // Ensure images input reflects current imagesDT selection
-    if (imagesInput) {
-      imagesInput.files = imagesDT.files;
-    }
-
-    const formData = new FormData(e.target);
-
-    const contents = [];
-    for (let i = 0; i < createContentCount; i++) {
-      const subheading = formData.get(`subheading-${i}`) || null;
-      const description = formData.get(`description-${i}`) || null;
-      if (subheading || description) {
-        contents.push({ subheading, description });
-      }
-      formData.delete(`subheading-${i}`);
-      formData.delete(`description-${i}`);
-    }
-    formData.append('content', JSON.stringify(contents));
-
+    const submitButton = e.target.querySelector('button[type="submit"]');
+    const formElements = e.target.querySelectorAll('button, input, textarea, select');
+    
     try {
+      // Ensure images input reflects current imagesDT selection FIRST
+      if (imagesInput) {
+        imagesInput.files = imagesDT.files;
+      }
+
+      // Create FormData BEFORE disabling elements
+      const formData = new FormData(e.target);
+
+      // NOW disable all form elements and show loading
+      showLoadingSpinner(submitButton, 'Creating Event...');
+      formElements.forEach(el => {
+        if (el !== submitButton) el.disabled = true;
+      });
+      showPageLoading(true);
+
+      const contents = [];
+      for (let i = 0; i < createContentCount; i++) {
+        const subheading = formData.get(`subheading-${i}`) || null;
+        const description = formData.get(`description-${i}`) || null;
+        if (subheading || description) {
+          contents.push({ subheading, description });
+        }
+        formData.delete(`subheading-${i}`);
+        formData.delete(`description-${i}`);
+      }
+      formData.append('content', JSON.stringify(contents));
+
       const res = await fetch(API_URL, { method: 'POST', body: formData });
       const result = await res.json();
+      
       if (result.success) {
         alert('Event created successfully!');
         closeModal(createModal);
         e.target.reset();
-        fetchEvents();
+        // Reset UI state
+        imagesDT = new DataTransfer();
+        if (imagesPreviewGrid) imagesPreviewGrid.innerHTML = '';
+        if (coverPreview) { coverPreview.src = ''; coverPreview.style.display = 'none'; }
+        if (imagesHint) imagesHint.textContent = '0/10 selected. First image may be used as thumbnail.';
+        createContentContainer.innerHTML = '';
+        createContentCount = 0;
+        await fetchEvents();
       } else {
         alert('Failed to create event: ' + result.message);
       }
     } catch (err) {
       console.error(err);
       alert('Error creating event.');
+    } finally {
+      // Re-enable form elements and hide loading
+      hideLoadingSpinner(submitButton);
+      formElements.forEach(el => {
+        if (el !== submitButton) el.disabled = false;
+      });
+      showPageLoading(false);
     }
   });
 
