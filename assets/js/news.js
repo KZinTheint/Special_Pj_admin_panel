@@ -122,6 +122,8 @@ document.addEventListener('DOMContentLoaded', () => {
     news.forEach(newsItem => {
       const newsCard = document.createElement('div');
       newsCard.className = 'news-card';
+      newsCard.dataset.id = newsItem.id;
+      newsCard.style.cursor = 'pointer';
       newsCard.innerHTML = `
         <img src="${newsItem.cover_url}" alt="${newsItem.title}" class="news-card-image">
         <div class="news-card-content">
@@ -129,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
           <p>${newsItem.created_at ? new Date(newsItem.created_at).toLocaleDateString() : 'Recently published'}</p>
         </div>
         <div class="news-card-actions">
-          <button class="btn-view" data-id="${newsItem.id}">View Details</button>
           <button class="btn-delete" data-id="${newsItem.id}">Delete</button>
         </div>
       `;
@@ -139,15 +140,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Grid Button Handlers ---
   newsGrid.addEventListener('click', async (e) => {
-    const newsId = e.target.dataset.id;
-    
-    if (e.target.classList.contains('btn-view')) {
-      // Navigate to news detail page
-      window.location.href = `news-detail.html?id=${newsId}`;
-      return;
-    }
-    
+    // Handle delete button clicks
     if (e.target.classList.contains('btn-delete')) {
+      e.stopPropagation(); // Prevent card click
+      const newsId = e.target.dataset.id;
+      
       if (confirm('Are you sure you want to delete this news?')) {
         const deleteButton = e.target;
         try {
@@ -171,6 +168,15 @@ document.addEventListener('DOMContentLoaded', () => {
           showPageLoading(false);
         }
       }
+      return;
+    }
+
+    // Handle news card clicks (for viewing details)
+    const newsCard = e.target.closest('.news-card');
+    if (newsCard && newsCard.dataset.id) {
+      const newsId = newsCard.dataset.id;
+      // Navigate to news detail page
+      window.location.href = `news-detail.html?id=${newsId}`;
     }
   });
 
